@@ -11,6 +11,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-2E7D32.svg)](LICENSE)
 [![Geo Stack](https://img.shields.io/badge/Geo-Rasterio%20%7C%20GeoPandas%20%7C%20SHAP-1B4332)](requirements.txt)
 
+[中文](README.md) · [English](README.en.md)
+
 [课程目录](#课程目录) · [核心主线](#核心主线) · [快速开始](#快速开始) · [数据准备](docs/DATA.md) · [环境配置](docs/ENVIRONMENT.md)
 
 </div>
