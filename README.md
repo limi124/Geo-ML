@@ -1,163 +1,163 @@
-# Geo-ML｜地理人的机器学习课
+<div align="center">
 
 ![Geo-ML 教程封面](assets/social-preview.png)
 
-> 用黑龙江甘南县的多源栅格，走一遍“认数据 → 对齐 → 建模 → 空间验证”的完整流程。
+# Geo-ML｜地理人的机器学习课
 
-这是一本写给**地理、GIS、遥感方向**读者的中文实战教程。你不需要先学完机器学习：只要有 Python 基础，能看懂经纬度、投影、栅格和像元，就可以跟着 8 个 Notebook 一步步做。
+**用多源遥感与地理栅格，走一遍「认数据 → 对齐 → 建模 → 空间验证 → 写回地图」的完整实战流程**
 
-教程不追求“把模型刷到最高分”。它更关心地理人最容易踩的坑：**不同分辨率怎么对齐、缺测怎么处理、随机划分为什么过于乐观、测试区为什么不能反复用、SHAP 为什么不是因果。**
+[![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](environment.yml)
+[![Notebooks](https://img.shields.io/badge/Notebooks-8%20Chapters-F37626?logo=jupyter&logoColor=white)](notebooks/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-2E7D32.svg)](LICENSE)
+[![Geo Stack](https://img.shields.io/badge/Geo-Rasterio%20%7C%20GeoPandas%20%7C%20SHAP-1B4332)](requirements.txt)
 
-## 为什么写这个教程
+[课程目录](#课程目录) · [核心主线](#核心主线) · [快速开始](#快速开始) · [数据准备](docs/DATA.md) · [环境配置](docs/ENVIRONMENT.md)
 
-我学地理与遥感时，常常想找一份能从栅格数据开始、一步步做到模型验证的中文教程。资料并不少，但能跟着实际操作、又把空间验证和数据处理讲清楚的内容不太容易找，有些课程还需要付费。
+</div>
 
-所以我把自己整理的学习路线和练习，慢慢做成了这 8 章 Notebook。它还在完善中，也不打算用高分结果包装机器学习；我更希望后来想学的地理人，能从数据整理、栅格对齐开始，亲手走完一遍建模和空间验证。
+---
 
-如果你也在学 GIS、遥感或机器学习，欢迎拿它练习。遇到问题、看不懂的地方，或觉得哪一章值得补充，都欢迎开 Issue 告诉我。**我确实很需要 Star 的支持：如果这份教程对你有帮助，请给仓库点一个 Star。对我来说，这不只是一个数字，也是继续整理和完善它的鼓励。**
+这是一套面向**地理、GIS、遥感方向**读者的中文开源实战教程。你不需要先啃完机器学习理论：只要有基础 Python 语法，能看懂经纬度、投影、栅格与像元，就可以跟着 8 个循序渐进的 Jupyter Notebook 完成从原始 GeoTIFF 检查到空间预测制图的全流程。
 
-深度学习内容整理在另一个仓库：[遥感深度学习笔记](https://github.com/limi124/remote_sensing_dl_notes)，也欢迎一起学习交流。
+教程不追求“把模型指标刷到最高”。它更关心地理空间建模中最容易踩、却最少被系统讲透的真实问题：
 
-```text
-────────────────────────────────────────────────
-章节    教程内容
-════════════════════════════════════════════════
-01      认识遥感栅格与数据质量
-02      栅格重投影、重采样与对齐
-03      从栅格构建机器学习样本
-04      随机划分与空间验证
-05      均值基线、线性回归与岭回归
-06      决策树与随机森林
-07      XGBoost 与 SHAP 模型解释
-08      KNN、支持向量回归与 MLP
-────────────────────────────────────────────────
+- **多源异构对齐**：26.7 m UTM 高程、250 m NDVI、5–10 km 气象/土壤水分，如何严谨对齐到同一参考网格？
+- **缺测与填充陷阱**：未声明 NoData 的边界零值、边缘缺测像元，为什么不能在划分前全局填补？
+- **空间自相关泄漏**：为什么随机交叉验证的 R² 往往虚高，而空间分块验证才是真实的外推考场？
+- **可解释性的边界**：变量高度共线、观测时间不同步时，SHAP 值能说明什么、不能说明什么？
+
+---
+
+## 全书工作流
+
+```mermaid
+flowchart LR
+    A["多源原始栅格<br/>LST · DEM · NDVI · 气温 · 降水 · 土壤水分"] --> B["01 认识数据<br/>元数据与质量审计"]
+    B --> C["02 栅格对齐<br/>重投影与重采样"]
+    C --> D["03 构建训练表<br/>像元展平与坐标保留"]
+    D --> E["04 空间验证<br/>固定空间折 + 独立测试区"]
+    E --> F["05–08 建模与解释<br/>基线 · 树模型 · XGBoost/SHAP · KNN/SVR/MLP"]
+    F --> G["GeoTIFF 写回<br/>观测 / 预测 / 残差地图"]
 ```
 
-## 这本书在做什么
+---
 
-案例区是**黑龙江省齐齐哈尔市甘南县**（约 122.90–124.47°E、47.59–48.53°N），不是甘肃省甘南藏族自治州。目标变量是 2021 年的地表温度（LST），预测变量是高程、NDVI、气温、2020 年降水和 2020 年土壤水分。
+## 课程目录
 
-**本仓库仅供学习与演示。** 欢迎跟着教程动手练习，也欢迎提问、交流和提出改进建议。
+> 每章聚焦一个核心地理建模问题，包含代码实现、误差分析、常见误区与课后练习。
 
-## 你会学到什么
+| 章节 | Notebook | 核心问题 | 关键方法与交付 |
+|:---:|---|---|---|
+| **01** | [认识数据](notebooks/01_认识数据.ipynb) | 多源栅格能不能直接放在一起建模？ | `rasterio` 元数据审计、行政边界核对、NoData 与零值诊断 |
+| **02** | [栅格对齐](notebooks/02_栅格对齐.ipynb) | 不同分辨率与坐标系如何对齐到同一底纸？ | 重投影、双线性 vs 最近邻重采样、共同有效区与 GeoTIFF 写回 |
+| **03** | [构建训练表](notebooks/03_构建训练表.ipynb) | 怎样把二维栅格变成结构化样本表？ | 保留 `row/col/x/y` 定位、缺测统计、防泄漏 `Pipeline` 思想 |
+| **04** | [空间验证](notebooks/04_空间验证.ipynb) | 为什么随机划分的评分常常过于乐观？ | 四邻接空间自相关诊断、空间分块 5 折 + 留出连续测试区 |
+| **05** | [回归基线](notebooks/05_回归基线.ipynb) | 最朴素的线性基线能做到什么程度？ | 均值基线、线性回归、岭回归、空间三联图（观测/预测/残差） |
+| **06** | [决策树与随机森林](notebooks/06_决策树与随机森林.ipynb) | 一棵树为什么容易过拟合，森林强在哪？ | 树深过拟合曲线、随机森林空间 CV、树模型外推局限 |
+| **07** | [XGBoost 与 SHAP](notebooks/07_XGBoost与SHAP.ipynb) | 梯度提升与 SHAP 能多告诉我们什么？ | 空间 CV 调参、Beeswarm / Waterfall 拆解、共线变量归因边界 |
+| **08** | [KNN / SVR / MLP](notebooks/08_KNN_SVR_MLP.ipynb) | 距离、核函数与神经网络各自表现如何？ | RBF-SVR 参数热图、四模型同尺对比、训练耗时与残差制图 |
 
-- 从 GeoTIFF 元数据检查、栅格对齐到训练表构建；
-- 空间分块验证，以及它和随机划分的区别；
-- 从线性回归、树模型到 XGBoost、SHAP、KNN、SVR 和 MLP；
-- 用地图和误差指标检查预测表现，并讨论模型解释的边界。
+---
 
-![Geo-ML 竖版封面](assets/cover-portrait.png)
+## 核心主线
 
-## 案例与数据
+1. **空间验证贯穿全书**：第 04 章固定一套「5 个空间训练折 + 1 个中南连续测试区」，第 05–08 章严格复用同一把尺子。所有调参与模型筛选只在训练区空间折内完成，测试区仅在定稿后打开一次。
+2. **模型对比看“退化幅度”而不只看单点排名**：单棵深树在训练区拟合极好，但迁移到留出空间块时误差急剧恶化；随机森林与 XGBoost 的核心优势在于跨区迁移时退化更慢、稳定性更高。
+3. **重采样不等于增加细节**：5 km 降水与 10 km 土壤水分重采样到 1 km 网格后，粗像元内部仍是常值块，只能提供区域背景信息，不能被解读为像元尺度的局地机制。
+4. **预测必须回到地图上检查**：除了 RMSE、MAE 和 R²，教程统一使用观测/预测同色标、残差以 0 为中心的三联图，把误差的空间聚集性直接暴露出来。
 
-教程示例使用黑龙江省齐齐哈尔市甘南县的多源栅格，演示在留出空间区域上估计地表温度。源数据的单位、时间和再分发许可并未全部核实，因此公开仓库不包含原始数据、派生数据或模型结果。请按 [数据说明](docs/DATA.md) 自行准备数据，并先确认你有权使用这些数据。
-
-Notebook 已清除运行输出，公开仓库也不附带原始栅格和边界数据。**克隆仓库后不能直接运行完整案例**：请先按 [数据说明](docs/DATA.md) 准备同结构数据，并确认拥有相应使用权限，再按章节顺序运行以生成自己的表格和图件。
+---
 
 ## 快速开始
 
-### 1. 环境
+### 1. 创建环境
 
-本项目复用已有的 Conda 环境 `geoml`，不新建虚拟环境：
+地理空间依赖（GDAL、Rasterio、GeoPandas、PROJ）强烈建议通过 Conda 安装，避免单独 `pip install` 引发二进制依赖冲突：
 
-```powershell
-conda run -n geoml python --version
-```
-
-依赖版本见 [requirements.txt](requirements.txt)。地理库建议通过 Conda 环境安装，避免单独用 pip 安装 GDAL。
-
-### 2. 数据
-
-把六张栅格和甘南县边界放到 `data/raw/`：
-
-```text
-data/raw/
-├── GNLST.tif
-├── GNDEM.tif
-├── GNNDVI.tif
-├── GNTEM.tif
-├── precip_sum_2020.tif
-├── soil_moist_mean_2020.tif
-└── GanNan.shp / .shx / .dbf / .prj / .cpg
-```
-
-字段、单位、时间与校验值见 [docs/DATA.md](docs/DATA.md) 和 [data/raw/README.md](data/raw/README.md)。
-
-### 3. 运行
-
-```powershell
+```bash
+git clone https://github.com/limi124/Geo-ML.git
 cd Geo-ML
 
-# 生成项目局部 kernelspec（只需一次）
-conda run -n geoml python tools\prepare_kernel.py
+# 创建并激活环境（若本机已有同名 geoml 环境可直接跳过）
+conda env create -f environment.yml
+```
 
-# 让 Jupyter 找到项目内 kernel
+> 详细依赖说明与已验证版本见 [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md) 与 [requirements.txt](requirements.txt)。
+
+### 2. 准备数据
+
+公开仓库不包含原始观测栅格与预先生成的运行输出。你可以任选以下方式准备 `data/raw/`：
+
+- **方式 A（推荐，开箱即跑）**：生成一套纯数学合成的多分辨率示例栅格与边界文件，完整跑通全部 8 章代码与制图流程：
+
+  ```bash
+  conda run -n geoml python tools/make_demo_data.py
+  ```
+
+- **方式 B（自有数据）**：按 [docs/DATA.md](docs/DATA.md) 放置同结构的 6 张 GeoTIFF 与行政区边界文件至 `data/raw/`。
+
+### 3. 注册内核并运行
+
+```powershell
+# 1) 生成项目局部 Jupyter kernelspec（兼容 Windows / macOS / Linux，仅需一次）
+conda run -n geoml python tools/prepare_kernel.py
+
+# 2) 设置局部 JUPYTER_PATH
+# Windows PowerShell:
 $env:JUPYTER_PATH = "$PWD\.jupyter"
+# macOS / Linux:
+# export JUPYTER_PATH="$PWD/.jupyter"
 
-# 跑单章
-conda run --no-capture-output -n geoml python tools\run_notebook.py 01_认识数据.ipynb
+# 3) 运行单章或全部 8 章 Notebook
+conda run --no-capture-output -n geoml python tools/run_notebook.py 01_认识数据.ipynb
 
-# 跑全部 8 章
-conda run --no-capture-output -n geoml python tools\run_notebook.py `
+conda run --no-capture-output -n geoml python tools/run_notebook.py `
   01_认识数据.ipynb 02_栅格对齐.ipynb 03_构建训练表.ipynb 04_空间验证.ipynb `
   05_回归基线.ipynb 06_决策树与随机森林.ipynb 07_XGBoost与SHAP.ipynb 08_KNN_SVR_MLP.ipynb
 ```
 
-每章第一个代码单元都会打印 `sys.executable` 和 `CONDA_PREFIX`，用来确认没有误用 base 环境。
+运行完成后，生成的图件、指标表与预测 GeoTIFF 将保存在 `outputs/` 目录下；交付或提交前可执行 `conda run -n geoml python tools/check_notebooks.py` 检查仓库整洁度。
+
+---
 
 ## 项目结构
 
 ```text
 Geo-ML/
-├── notebooks/              # 8 个章节 Notebook（输出已清空）
+├── assets/                 # 封面与社交预览图
+├── notebooks/              # 8 个章节 Notebook（公开版已清空输出）
 ├── src/
-│   ├── geoml_data.py       # 栅格读取、对齐、训练表、空间划分
-│   ├── geoml_models.py     # 模型工厂、指标、CV
-│   └── geoml_style.py      # 中文制图样式、三联图、模型对比图
-├── data/raw/               # 原始数据（不随公开仓库分发）
+│   ├── geoml_data.py       # 栅格读取、对齐、训练表、空间划分与写回
+│   ├── geoml_models.py     # 模型工厂、空间 CV 与评估指标
+│   └── geoml_style.py      # 中文制图样式、空间三联图与对比图
+├── tools/
+│   ├── make_demo_data.py   # 一键生成可运行的合成多源栅格示例
+│   ├── prepare_kernel.py   # 生成跨平台项目局部 kernelspec
+│   ├── run_notebook.py     # 无界面批量执行 Notebook
+│   └── check_notebooks.py  # 仓库结构与净版自检
+├── data/raw/               # 本地数据目录（仅含说明，数据文件已忽略）
 ├── docs/
 │   ├── DATA.md             # 数据准备与许可说明
-│   └── ENVIRONMENT.md      # 环境配置说明
-├── tools/
-│   ├── run_notebook.py     # 无界面执行
-│   ├── prepare_kernel.py   # 生成本地 kernelspec
-│   └── check_notebooks.py  # 交付前自检
-└── requirements.txt
+│   └── ENVIRONMENT.md      # 环境配置与内核说明
+├── environment.yml         # Conda 环境定义
+└── requirements.txt        # 已验证的核心包版本记录
 ```
 
-## 复现与自检
-
-准备好数据后可运行 Notebook。公开版不附带预先生成的结果图和表格。
-
-```powershell
-conda run -n geoml python tools\check_notebooks.py
-```
-
-教程代码与讲解已在本地数据环境验证。公开版不包含运行所需数据，运行完整教程前请先按数据说明准备并放置数据。
+---
 
 ## 数据与许可
 
-**数据再分发许可尚未核实。** 本仓库不分发原始栅格、边界矢量、训练表、预测结果或带运行输出的 Notebook。因此：
-
-- 教程代码与文字采用 MIT 许可（见 [LICENSE](LICENSE)）；
-- 数据与模型结果不属于 MIT 许可覆盖范围；
-- 使用者需自行确认数据来源和使用权限。
-
-更多信息见 [数据说明](docs/DATA.md)。
-
-## 局限
-
-- 源数据的观测时段、单位和来源信息不完整，不能仅凭数值范围推断。
-- 不同变量可能来自不同年份和空间分辨率，不能把重采样误认为增加了细节。
-- 测试区与训练区可能存在分布差异，指标需要结合空间划分和误差地图解读。
-- 教程的 SVR 网格、树深范围、MLP 结构都很小，目的是教学，不是刷榜。
-
-## 适合谁
-
-- 地理、GIS、遥感专业的本科高年级/研究生；
-- 会一点 Python，但没系统做过机器学习的人；
-- 想给论文补上“空间验证”“基线模型”“可解释性”的地理工作者。
-
-如果你已经熟悉随机森林和 SHAP，可以直接从第 04、07 章看验证设计和归因边界。
+- **代码与教程文字**：采用 [MIT License](LICENSE) 开源。
+- **数据与派生结果**：案例区域设定为黑龙江省齐齐哈尔市甘南县（约 122.90–124.47°E、47.59–48.53°N）。由于原始案例数据的再分发许可尚未核实，公开仓库**不分发**原始栅格、边界矢量、训练表、预测结果或带运行输出的 Notebook；相关目录与产物均不在 MIT 许可覆盖范围内。
 
 ---
+
+## 为什么写这个教程
+
+学地理与遥感时，我常常想找一份能从栅格数据开始、一步步做到模型验证的中文教程。资料并不少，但能跟着实际操作、又把空间验证和数据处理讲清楚的内容不太容易找，有些课程还需要付费。
+
+所以我把自己整理的学习路线和练习，慢慢做成了这 8 章 Notebook。它还在完善中，也不打算用高分结果包装机器学习；我更希望后来想学的地理人，能从数据整理、栅格对齐开始，亲手走完一遍建模和空间验证。
+
+如果你也在学 GIS、遥感或机器学习，欢迎拿它练习。遇到问题、看不懂的地方，或觉得哪一章值得补充，都欢迎开 Issue 告诉我。深度学习方向的内容整理在另一个仓库：[遥感深度学习笔记 (remote_sensing_dl_notes)](https://github.com/limi124/remote_sensing_dl_notes)。
+
+**如果这份教程对你有帮助，欢迎给仓库点一个 Star 支持**——这不只是一个数字，也是继续整理和完善它的鼓励。

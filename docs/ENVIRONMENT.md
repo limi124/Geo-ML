@@ -1,14 +1,31 @@
-# 环境
+# 环境配置
 
-教程在 Python 3.11 和 Conda 环境 `geoml` 中开发。项目不要求创建新的虚拟环境。
+教程基于 Python 3.11 开发。地理空间库（GDAL、Rasterio、GeoPandas、PROJ）建议通过 `conda-forge` 统一安装，避免单独使用 `pip` 安装 GDAL 引发二进制依赖冲突。
 
-地理依赖（特别是 GDAL、Rasterio、GeoPandas 和 PROJ）建议通过 Conda 安装并放在同一个环境中。其他直接依赖的版本见仓库根目录的 `requirements.txt`。在已有的地理分析环境中运行前，请先确认 Rasterio、GDAL 与 PROJ 可以正常导入。
+## 1. 创建 Conda 环境
 
-生成 Notebook 内核配置：
+首次使用可通过仓库根目录的 [environment.yml](../environment.yml) 创建 `geoml` 环境：
+
+```bash
+conda env create -f environment.yml
+```
+
+如果你本机已有包含上述依赖的 `geoml` 环境，可直接复用，无需重建。已验证的精确版本清单见 [requirements.txt](../requirements.txt)。
+
+## 2. 注册项目局部 Jupyter 内核
+
+为了不污染全局 Jupyter 配置，可使用脚本在项目内生成 `.jupyter/kernels/geoml/kernel.json`（兼容 Windows / macOS / Linux）：
 
 ```powershell
-conda run -n geoml python tools\prepare_kernel.py
+# Windows PowerShell
+conda run -n geoml python tools/prepare_kernel.py
 $env:JUPYTER_PATH = "$PWD\.jupyter"
 ```
 
-项目局部 `.jupyter/` 配置由脚本在本机生成，包含本地解释器路径，因此不会随仓库分发。
+```bash
+# macOS / Linux
+conda run -n geoml python tools/prepare_kernel.py
+export JUPYTER_PATH="$PWD/.jupyter"
+```
+
+`.jupyter/` 目录包含本机解释器路径，已被 `.gitignore` 忽略，不会随仓库分发。

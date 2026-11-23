@@ -15,14 +15,15 @@ KERNEL_DIR = PROJECT / ".jupyter" / "kernels" / "geoml"
 def main() -> None:
     KERNEL_DIR.mkdir(parents=True, exist_ok=True)
     prefix = os.environ.get("CONDA_PREFIX", str(Path(sys.executable).parents[1]))
+    share_root = (Path(prefix) / "Library" / "share") if sys.platform == "win32" else (Path(prefix) / "share")
     spec = {
         "argv": [sys.executable, "-m", "ipykernel_launcher", "-f", "{connection_file}"],
         "display_name": "Python (geoml)",
         "language": "python",
         "env": {
             "CONDA_PREFIX": prefix,
-            "GDAL_DATA": str(Path(prefix) / "Library" / "share" / "gdal"),
-            "PROJ_DATA": str(Path(prefix) / "Library" / "share" / "proj"),
+            "GDAL_DATA": str(share_root / "gdal"),
+            "PROJ_DATA": str(share_root / "proj"),
         },
     }
     (KERNEL_DIR / "kernel.json").write_text(
