@@ -33,13 +33,21 @@
 ## 全书工作流
 
 ```mermaid
-flowchart LR
-    A["多源原始栅格<br/>LST · DEM · NDVI · 气温 · 降水 · 土壤水分"] --> B["01 认识数据<br/>元数据与质量审计"]
-    B --> C["02 栅格对齐<br/>重投影与重采样"]
-    C --> D["03 构建训练表<br/>像元展平与坐标保留"]
-    D --> E["04 空间验证<br/>固定空间折 + 独立测试区"]
-    E --> F["05–08 建模与解释<br/>基线 · 树模型 · XGBoost/SHAP · KNN/SVR/MLP"]
-    F --> G["GeoTIFF 写回<br/>观测 / 预测 / 残差地图"]
+flowchart TD
+    classDef stage fill:#F3F6F4,stroke:#1B4332,stroke-width:1.5px,color:#1B4332
+    classDef highlight fill:#FEF7EC,stroke:#C27803,stroke-width:1.8px,color:#78350F
+
+    subgraph S1["阶段一：数据准备与对齐"]
+        direction LR
+        A["01 认识数据<br/>元数据 · 边界 · NoData 审计"]:::stage --> B["02 栅格对齐<br/>重投影 · 重采样 · 共同有效区"]:::stage --> C["03 构建训练表<br/>保留行列号与坐标 · 缺测统计"]:::stage
+    end
+
+    subgraph S2["阶段二：验证设计 · 模型对比 · 地图写回"]
+        direction LR
+        D["04 空间验证<br/>固定 5 折空间块 + 独立测试区"]:::highlight --> E["05–08 建模与解释<br/>基线 · RF · XGBoost/SHAP · KNN/SVR/MLP"]:::stage --> F["GeoTIFF 写回<br/>观测 / 预测 / 残差三联图"]:::stage
+    end
+
+    S1 --> S2
 ```
 
 ---
